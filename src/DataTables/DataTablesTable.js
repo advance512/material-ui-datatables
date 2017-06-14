@@ -10,7 +10,7 @@ class DataTablesTable extends Table {
         allRowsSelected: this.state.allRowsSelected,
         multiSelectable: this.props.multiSelectable,
         onCellClick: this.onCellClick,
-        onCellDoubleClick: this.onCellDoubleClick,
+        // onCellDoubleClick: this.onCellDoubleClick,
         onCellHover: this.onCellHover,
         onCellHoverExit: this.onCellHoverExit,
         onRowHover: this.onRowHover,

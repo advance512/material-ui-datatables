@@ -1,4 +1,6 @@
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
+import PropTypes from 'prop-types';
+import get from 'lodash/get';
 import {TableHeader, TableRow} from 'material-ui/Table';
 import {Toolbar} from 'material-ui/Toolbar';
 import DropDownMenu from 'material-ui/DropDownMenu';
@@ -76,6 +78,7 @@ class DataTables extends Component {
     filterHintText: PropTypes.string,
     fixedFooter: PropTypes.bool,
     fixedHeader: PropTypes.bool,
+    footerToolbarItemStyle: PropTypes.object,
     footerToolbarStyle: PropTypes.object,
     height: PropTypes.string,
     multiSelectable: PropTypes.bool,
@@ -174,13 +177,16 @@ class DataTables extends Component {
     const {onCellClick, selectable} = this.props;
     if (onCellClick && !selectable) {
       const adjustedColumnIndex = this.props.showCheckboxes ? columnIndex : columnIndex - 1;
+      const clickedRow = this.props.data[rowIndex];
+      const clickedColumnKey = get(this.props.columns[adjustedColumnIndex], 'key', null);
+      const clickedColumn = get(clickedRow, clickedColumnKey, null);
       onCellClick(
         rowIndex,
         adjustedColumnIndex,
         // row data
-        this.props.data[rowIndex],
+        clickedRow,
         // clicked column
-        this.props.data[rowIndex][this.props.columns[adjustedColumnIndex].key],
+        clickedColumn,
         event
       );
     }
@@ -190,13 +196,16 @@ class DataTables extends Component {
     const {onCellDoubleClick} = this.props;
     if (onCellDoubleClick) {
       const adjustedColumnIndex = this.props.showCheckboxes ? columnIndex : columnIndex - 1;
+      const clickedRow = this.props.data[rowIndex];
+      const clickedColumnKey = get(this.props.columns[adjustedColumnIndex], 'key', null);
+      const clickedColumn = get(clickedRow, clickedColumnKey, null);
       onCellDoubleClick(
         rowIndex,
         adjustedColumnIndex,
         // row data
-        this.props.data[rowIndex],
+        clickedRow,
         // clicked column
-        this.props.data[rowIndex][this.props.columns[adjustedColumnIndex].key],
+        clickedColumn,
         event
       );
     }
@@ -244,6 +253,7 @@ class DataTables extends Component {
       filterHintText,
       fixedHeader,
       fixedFooter,
+      footerToolbarItemStyle,
       footerToolbarStyle,
       stripedRows,
       showRowHover,
@@ -304,6 +314,8 @@ class DataTables extends Component {
         />
       );
     }
+
+    const finalFooterToolbarItemStyle = Object.assign({}, styles.footerToolbarItem, footerToolbarItemStyle);
 
     return (
       <div>
@@ -382,7 +394,7 @@ class DataTables extends Component {
         </DataTablesTable>
         <Toolbar style={Object.assign({}, styles.footerToolbar, footerToolbarStyle)}>
           <div style={styles.footerControlGroup}>
-            <div style={styles.footerToolbarItem}>
+            <div style={finalFooterToolbarItemStyle}>
               <div>{rowSizeLabel}</div>
             </div>
             <DropDownMenu
@@ -400,10 +412,10 @@ class DataTables extends Component {
                 );
               })}
             </DropDownMenu>
-            <div style={styles.footerToolbarItem}>
+            <div style={finalFooterToolbarItemStyle}>
               <div>{summaryLabelTemplate(start, end, totalCount)}</div>
             </div>
-            <div style={Object.assign(styles.paginationButtons, styles.footerToolbarItem)}>
+            <div style={Object.assign(styles.paginationButtons, finalFooterToolbarItemStyle)}>
               <FlatButton
                 icon={<ChevronLeft />}
                 style={styles.paginationButton}

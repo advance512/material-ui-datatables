@@ -14,6 +14,7 @@ function getStyles(context) {
 
   return {
     headerToolbar: {
+      width: '100%',
       backgroundColor: table.backgroundColor,
       height: 64,
       paddingRight: 8,
